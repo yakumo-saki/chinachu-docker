@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: chinachu
+  name: chinachu-web
+spec:
+  type: LoadBalancer
+  ports:
+  - name: "webui"
+    port: 10772
+    targetPort: 10772
+  - name: "webui2"
+    port: 20772
+    targetPort: 20772
+  selector:
+    app: chinachu

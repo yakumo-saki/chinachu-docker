@@ -1,0 +1,62 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: chinachu
+spec:
+  selector:
+    matchLabels:
+      app: chinachu
+  serviceName: chinachu
+  replicas: 1 # by default is 1
+  template:
+    metadata:
+      labels:
+        app: chinachu
+    spec:
+      containers:
+        - image: yakumosaki/chinachu:latest
+          name: chinachu-wui
+          resources:
+            limits:
+              cpu: "1"
+              memory: "1Gi"
+            requests:
+              cpu: 50m
+              memory: "200M"
+          command: 
+            - "/bin/bash"
+            - -c
+            - "/docker-entrypoint.sh;cd /usr/local/chinachu; node app-wui.js"
+          # command:
+          #   - "/bin/sh"
+          # args:
+          #   - "-c"
+          #   - "tail -f /dev/null"
+          volumeMounts:
+            - mountPath: /chinachu
+              name: chinachu
+        - image: yakumosaki/chinachu:latest
+          name: chinachu-operator
+          resources:
+            limits:
+              cpu: "1"
+              memory: "1Gi"
+            requests:
+              cpu: 50m
+              memory: "200M"
+          command:
+            - "/bin/bash"
+            - -c
+            - "/docker-entrypoint.sh;cd /usr/local/chinachu; node app-operator.js"
+          # command:
+          #   - "/bin/sh"
+          # args:
+          #   - "-c"
+          #   - "tail -f /dev/null"
+          volumeMounts:
+            - mountPath: /chinachu
+              name: chinachu
+      volumes:
+        - name: chinachu
+          persistentVolumeClaim:
+            claimName: pvc-chinachu
